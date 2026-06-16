@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraQuiz - AI Quiz Generator</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background elements -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">✦</span>
+                <h1 class="logo-text">Aura<span>Quiz</span></h1>
+            </div>
+            <div id="header-actions" class="header-actions hidden">
+                <button id="btn-reset-key" class="btn btn-secondary btn-sm" title="Change Gemini API Key">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                    </svg>
+                    <span>Reset Key</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="main-content">
+            
+            <!-- SCREEN 1: API KEY SETUP -->
+            <section id="screen-api-key" class="screen-section active">
+                <div class="card glass-card fade-in">
+                    <div class="card-header text-center">
+                        <div class="badge-accent">Step 1 of 2</div>
+                        <h2>Unlock the Generator</h2>
+                        <p class="subtitle">AuraQuiz uses Google Gemini AI to craft custom quizzes. Please enter your Gemini API Key to begin.</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="api-key-form">
+                            <div class="form-group">
+                                <label for="api-key-input" class="form-label">Gemini API Key</label>
+                                <div class="input-wrapper">
+                                    <input type="password" id="api-key-input" class="form-input" placeholder="AIzaSy..." required autocomplete="off">
+                                    <button type="button" id="btn-toggle-key-visibility" class="btn-input-action" aria-label="Toggle Visibility">
+                                        <svg class="icon icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="form-help">
+                                    Your key is stored securely in your browser's local storage and is sent directly to Google Gemini APIs.
+                                </div>
+                            </div>
+                            
+                            <div id="api-validation-status" class="alert hidden">
+                                <!-- Dynamic message goes here -->
+                            </div>
+                            
+                            <button type="submit" id="btn-verify-key" class="btn btn-primary btn-block">
+                                <span class="btn-text">Verify & Continue</span>
+                                <span class="spinner hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="card-footer text-center">
+                        <p class="small-text">Don't have an API key? <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" class="link-highlight">Get a free key from Google AI Studio</a></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 2: QUIZ GENERATOR DASHBOARD -->
+            <section id="screen-dashboard" class="screen-section">
+                <div class="card glass-card fade-in">
+                    <div class="card-header">
+                        <div class="badge-accent">Step 2 of 2</div>
+                        <h2>Create Your Quiz</h2>
+                        <p class="subtitle">Select your preferences below to let Gemini generate a tailor-made challenge.</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="quiz-config-form">
+                            <!-- Topic input -->
+                            <div class="form-group">
+                                <label for="quiz-topic" class="form-label">What topic do you want to be tested on?</label>
+                                <input type="text" id="quiz-topic" class="form-input" placeholder="e.g. JavaScript Closures, European History, Quantum Physics" required>
+                                
+                                <div class="suggestions-container">
+                                    <span class="suggestion-tag">JavaScript Closures</span>
+                                    <span class="suggestion-tag">Astronomy</span>
+                                    <span class="suggestion-tag">World War II</span>
+                                    <span class="suggestion-tag">Web Accessibility</span>
+                                    <span class="suggestion-tag">Creative Writing</span>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <!-- Difficulty Choice -->
+                                <div class="form-group">
+                                    <label class="form-label">Difficulty</label>
+                                    <div class="segmented-control">
+                                        <label class="segmented-option">
+                                            <input type="radio" name="difficulty" value="Easy" checked>
+                                            <span class="option-label">Easy</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="difficulty" value="Medium">
+                                            <span class="option-label">Medium</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="difficulty" value="Hard">
+                                            <span class="option-label">Hard</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Question Count -->
+                                <div class="form-group">
+                                    <label class="form-label">Number of Questions</label>
+                                    <div class="segmented-control">
+                                        <label class="segmented-option">
+                                            <input type="radio" name="num-questions" value="5" checked>
+                                            <span class="option-label">5</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="num-questions" value="10">
+                                            <span class="option-label">10</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="num-questions" value="15">
+                                            <span class="option-label">15</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <!-- Question Format -->
+                                <div class="form-group">
+                                    <label class="form-label">Question Type</label>
+                                    <div class="segmented-control">
+                                        <label class="segmented-option">
+                                            <input type="radio" name="question-type" value="Multiple Choice" checked>
+                                            <span class="option-label">Multiple Choice</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="question-type" value="True/False">
+                                            <span class="option-label">True / False</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Timer Setting -->
+                                <div class="form-group">
+                                    <label class="form-label">Time Limit (per question)</label>
+                                    <div class="segmented-control">
+                                        <label class="segmented-option">
+                                            <input type="radio" name="timer-setting" value="0">
+                                            <span class="option-label">None</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="timer-setting" value="15">
+                                            <span class="option-label">15s</span>
+                                        </label>
+                                        <label class="segmented-option">
+                                            <input type="radio" name="timer-setting" value="30" checked>
+                                            <span class="option-label">30s</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btn-generate-quiz" class="btn btn-primary btn-block btn-lg mt-4">
+                                <svg class="icon icon-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                                </svg>
+                                <span>Generate AI Quiz</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 3: INTERACTIVE QUIZ PLAYER -->
+            <section id="screen-quiz-player" class="screen-section">
+                <!-- Top HUD -->
+                <div class="quiz-hud glass-card mb-4 fade-in">
+                    <div class="hud-item flex-1">
+                        <span class="hud-label">Quiz Topic</span>
+                        <span id="hud-topic-text" class="hud-value truncate-text">JavaScript Closures</span>
+                    </div>
+                    <div class="hud-item text-center">
+                        <span class="hud-label">Progress</span>
+                        <span id="hud-progress-text" class="hud-value">1 / 5</span>
+                    </div>
+                    <div class="hud-item text-right" id="hud-timer-container">
+                        <span class="hud-label">Time Remaining</span>
+                        <span id="hud-timer-text" class="hud-value timer-alert">30s</span>
+                    </div>
+                </div>
+
+                <!-- Main Quiz Card -->
+                <div class="card glass-card fade-in relative">
+                    <!-- Progress Bar container -->
+                    <div class="progress-bar-container">
+                        <div id="quiz-progress-bar" class="progress-bar" style="width: 20%;"></div>
+                    </div>
+                    
+                    <div class="card-body py-5">
+                        <!-- Question display -->
+                        <div class="question-container">
+                            <h3 id="quiz-question-text" class="question-text">
+                                What is a closure in JavaScript?
+                            </h3>
+                        </div>
+
+                        <!-- Options List -->
+                        <div id="quiz-options-list" class="options-grid mt-4">
+                            <!-- Example choices: generated dynamically -->
+                            <button class="option-card">
+                                <span class="option-letter">A</span>
+                                <span class="option-text">A function bundled together with references to its surrounding state.</span>
+                                <span class="option-status-icon"></span>
+                            </button>
+                            <button class="option-card correct">
+                                <span class="option-letter">B</span>
+                                <span class="option-text">A way to close a database connection automatically in node.</span>
+                                <span class="option-status-icon">✓</span>
+                            </button>
+                            <button class="option-card incorrect">
+                                <span class="option-letter">C</span>
+                                <span class="option-text">A method inside a class declaration.</span>
+                                <span class="option-status-icon">✗</span>
+                            </button>
+                            <button class="option-card">
+                                <span class="option-letter">D</span>
+                                <span class="option-text">None of the above.</span>
+                                <span class="option-status-icon"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Footer Controls -->
+                    <div class="card-footer flex justify-between items-center border-t border-glass">
+                        <div id="feedback-panel" class="feedback-panel hidden">
+                            <!-- Quick correction message & button -->
+                            <span id="feedback-text" class="feedback-message">Correct! Great job.</span>
+                        </div>
+                        <button id="btn-next-question" class="btn btn-primary ml-auto" disabled>
+                            <span>Next Question</span>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 4: PERFORMANCE REVIEW & RESULTS -->
+            <section id="screen-results" class="screen-section">
+                <div class="card glass-card fade-in">
+                    <div class="card-header text-center">
+                        <div class="badge-accent">Quiz Complete!</div>
+                        <h2>Your Performance</h2>
+                        <p class="subtitle" id="results-headline">Outstanding effort! Here's how you did.</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Score Display Section -->
+                        <div class="score-display-wrapper">
+                            <!-- Circular Progress Ring SVG -->
+                            <div class="score-circle">
+                                <svg viewBox="0 0 36 36" class="circular-chart">
+                                    <path class="circle-bg"
+                                        d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    />
+                                    <path id="score-circle-progress" class="circle-progress"
+                                        stroke-dasharray="80, 100"
+                                        d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    />
+                                </svg>
+                                <div class="score-percentage-value">
+                                    <span id="result-percent-text">80%</span>
+                                    <span class="score-ratio" id="result-ratio-text">4 / 5 Correct</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats Dashboard Grid -->
+                        <div class="stats-grid mt-4">
+                            <div class="stat-card">
+                                <span class="stat-value" id="stat-accuracy">80%</span>
+                                <span class="stat-label">Accuracy</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="stat-time-spent">01:45</span>
+                                <span class="stat-label">Time Spent</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="stat-avg-speed">15s</span>
+                                <span class="stat-label">Avg Speed / Q</span>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Question Explanations -->
+                        <div class="review-section mt-5">
+                            <h3 class="review-title">Detailed Question Review</h3>
+                            <div id="results-review-list" class="review-list">
+                                <!-- Dynamic entries go here -->
+                                <div class="review-item correct">
+                                    <div class="review-item-header">
+                                        <span class="review-status-indicator">✓</span>
+                                        <span class="review-question-title">1. What is a closure in JavaScript?</span>
+                                        <svg class="icon review-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="review-item-body">
+                                        <p class="review-user-answer"><strong>Your Answer:</strong> Option A (Correct)</p>
+                                        <div class="explanation-box">
+                                            <h5>AI Explanation:</h5>
+                                            <p>A closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Options -->
+                    <div class="card-footer flex gap-3 border-t border-glass">
+                        <button id="btn-restart-quiz" class="btn btn-secondary flex-1">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                            <span>Try Another Topic</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="app-footer text-center">
+            <p>Powered by Google Gemini 2.5 Flash • AuraQuiz © 2026</p>
+        </footer>
+    </div>
+
+    <!-- FULL SCREEN LOADER / GENERATING STATE -->
+    <div id="loader-overlay" class="loader-overlay hidden">
+        <div class="loader-content text-center">
+            <div class="pulse-rings">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+                <div class="loader-gemini-spark">✦</div>
+            </div>
+            <h3 class="loader-title mt-4">Generating Your Quiz</h3>
+            <p id="loader-status-text" class="loader-subtitle">Connecting to Gemini AI...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Controller -->
+    <script src="app.js"></script>
+</body>
+</html>
